@@ -17,7 +17,10 @@ declare namespace tmh
     }
     interface IDynamicLocaleProvider
     {
-        localeLocationPattern(locationPattern: string): void;
+        localeLocationPattern(locationPattern?: string): IDynamicLocaleProvider|string;
+		localeLocationProvider(locationProvider?: TLocationProvider): IDynamicLocaleProvider|TLocationProvider;
         defaultLocale(locale: string): void;
     }
+
+    type TLocationProvider = (locale: string) => string|undefined;
 }

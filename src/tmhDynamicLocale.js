@@ -38,7 +38,8 @@
         storagePut = 'put',
         promiseCache = {},
         activeLocale,
-        extraProperties = {};
+        extraProperties = {},
+        localeLocationProvider;
 
       /**
    * Loads a script asynchronously
@@ -186,6 +187,15 @@
         }
       };
 
+      this.localeLocationProvider = function(func) {
+        if (func) {
+          localeLocationProvider = func;
+          return this;
+        } else {
+          return localeLocationProvider;
+        }
+      };
+
       this.appendScriptTo = function(nodeElement) {
         nodeToAppend = nodeElement;
       };
@@ -253,7 +263,16 @@
 
         function loadLocaleFn(localeId) {
           var baseProperties = {locale: localeId, angularVersion: angular.version.full};
-          return loadLocale(localeLocation(angular.extend({}, extraProperties, baseProperties)), locale, localeId, $rootScope, $q, tmhDynamicLocaleCache, $timeout);
+          var url;
+
+          if (localeLocationProvider) {
+            url = localeLocationProvider(localeId);
+          }
+          if (!url) {
+            url = localeLocation(angular.extend({}, extraProperties, baseProperties));
+          }
+
+          return loadLocale(url, locale, localeId, $rootScope, $q, tmhDynamicLocaleCache, $timeout);
         }
       }];
     }]).provider('tmhDynamicLocaleCache', function() {
